@@ -1,0 +1,1643 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://monotch-support.github.io/fms-its-interface/rest-api/">
+      
+      
+        <link rel="prev" href="../authentication/">
+      
+      
+        <link rel="next" href="../websocket/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>REST API - FMS ITS Interface</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/width.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#rest-api" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="FMS ITS Interface" class="md-header__button md-logo" aria-label="FMS ITS Interface" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FMS ITS Interface
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              REST API
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/monotch-support/fms-its-interface" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="FMS ITS Interface" class="md-nav__button md-logo" aria-label="FMS ITS Interface" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    FMS ITS Interface
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/monotch-support/fms-its-interface" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#vehicle-announcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vehicle announcement
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vehicle announcement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-or-update-vehicle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create or update vehicle
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Create or update vehicle">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#request-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request body
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-vehicle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get vehicle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vehicle-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vehicle types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fuel-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fuel types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#route-announcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Route announcement
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Route announcement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-or-update-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create or update route
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Create or update route">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#request-body-latlon-array" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request body (lat/lon array)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#request-body-address" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request body (address)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#response_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get route
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete route
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geo-reference-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geo reference types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Geo reference types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#latlonarraygeoreference-preferred" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        latLonArrayGeoReference (preferred)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#latlonpointgeoreference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        latLonPointGeoReference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addressgeoreference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        addressGeoReference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error responses
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../websocket/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WebSocket interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../event-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Event codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../use-cases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sequence-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sequence diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../protobuf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protobuf specification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#vehicle-announcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vehicle announcement
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vehicle announcement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-or-update-vehicle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create or update vehicle
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Create or update vehicle">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#request-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request body
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-vehicle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get vehicle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vehicle-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vehicle types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fuel-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fuel types
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#route-announcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Route announcement
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Route announcement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-or-update-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create or update route
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Create or update route">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#request-body-latlon-array" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request body (lat/lon array)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#request-body-address" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request body (address)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#response_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get route
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delete route
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geo-reference-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geo reference types
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Geo reference types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#latlonarraygeoreference-preferred" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        latLonArrayGeoReference (preferred)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#latlonpointgeoreference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        latLonPointGeoReference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addressgeoreference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        addressGeoReference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error responses
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="rest-api">REST API</h1>
+<p>The REST API is based on the <a href="https://otm5.opentripmodel.org/">Open Trip Model 5.0</a> and is used to exchange vehicle and route information. All requests and responses use JSON over HTTPS.</p>
+<p>All requests require a Bearer token in the <code>Authorization</code> header. See <a href="../authentication/">Authentication</a> for details.</p>
+<h2 id="vehicle-announcement">Vehicle announcement</h2>
+<p>Register a vehicle that will connect to our platform. This must be done <strong>at least every 24 hours</strong> to keep the vehicle active.</p>
+<h3 id="create-or-update-vehicle">Create or update vehicle</h3>
+<p><code>PUT /vehicles</code></p>
+<h4 id="request-body">Request body</h4>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vehicle-123"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Delivery Truck"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"vehicleType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"truck"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"licensePlate"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AB-123-CD"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"fuel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"diesel"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"externalAttributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"iVRIPriorityEnabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"dynamicRate"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Unique identifier for this vehicle (valid for 24 hours)</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>No</td>
+<td>Display name for the vehicle</td>
+</tr>
+<tr>
+<td><code>vehicleType</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Vehicle type (see <a href="#vehicle-types">vehicle types</a>)</td>
+</tr>
+<tr>
+<td><code>licensePlate</code></td>
+<td>string</td>
+<td>No</td>
+<td>License plate number</td>
+</tr>
+<tr>
+<td><code>fuel</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Fuel type (see <a href="#fuel-types">fuel types</a>)</td>
+</tr>
+<tr>
+<td><code>externalAttributes</code></td>
+<td>object</td>
+<td>No</td>
+<td>Extended properties for this interface</td>
+</tr>
+<tr>
+<td><code>externalAttributes.iVRIPriorityEnabled</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>Set to <code>true</code> to activate iVRI priority requests for this vehicle</td>
+</tr>
+<tr>
+<td><code>externalAttributes.dynamicRate</code></td>
+<td>boolean</td>
+<td>No</td>
+<td>Set to <code>true</code> for dynamic location update intervals, <code>false</code> for fixed 1 Hz updates</td>
+</tr>
+</tbody>
+</table>
+<h4 id="response">Response</h4>
+<p><strong>200 OK</strong> - Returns the vehicle object as confirmed by the server.</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vehicle-123"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Delivery Truck"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"vehicleType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"truck"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"licensePlate"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AB-123-CD"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"fuel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"diesel"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"externalAttributes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"iVRIPriorityEnabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"dynamicRate"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="get-vehicle">Get vehicle</h3>
+<p><code>GET /vehicles/{id}</code></p>
+<p>Returns the current vehicle announcement for the given ID.</p>
+<p><strong>200 OK</strong> - Vehicle found and returned.</p>
+<p><strong>404 Not Found</strong> - Vehicle not found.</p>
+<h3 id="vehicle-types">Vehicle types</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lightTruck</code></td>
+<td>Light truck</td>
+</tr>
+<tr>
+<td><code>boxtruck</code></td>
+<td>Box truck</td>
+</tr>
+<tr>
+<td><code>truck</code></td>
+<td>Truck</td>
+</tr>
+<tr>
+<td><code>heavyTruck</code></td>
+<td>Heavy truck</td>
+</tr>
+<tr>
+<td><code>trailer</code></td>
+<td>Trailer</td>
+</tr>
+<tr>
+<td><code>specialTransport</code></td>
+<td>Special transport</td>
+</tr>
+<tr>
+<td><code>dangerousGoods</code></td>
+<td>Dangerous goods</td>
+</tr>
+<tr>
+<td><code>bus</code></td>
+<td>Bus</td>
+</tr>
+<tr>
+<td><code>tram</code></td>
+<td>Tram</td>
+</tr>
+<tr>
+<td><code>pedestrian</code></td>
+<td>Pedestrian</td>
+</tr>
+<tr>
+<td><code>cyclist</code></td>
+<td>Cyclist</td>
+</tr>
+<tr>
+<td><code>moped</code></td>
+<td>Moped</td>
+</tr>
+<tr>
+<td><code>motorcycle</code></td>
+<td>Motorcycle</td>
+</tr>
+<tr>
+<td><code>car</code></td>
+<td>Car</td>
+</tr>
+<tr>
+<td><code>passengerCar</code></td>
+<td>Passenger car</td>
+</tr>
+<tr>
+<td><code>roadWork</code></td>
+<td>Road work vehicle</td>
+</tr>
+<tr>
+<td><code>rescue</code></td>
+<td>Rescue vehicle</td>
+</tr>
+<tr>
+<td><code>emergency</code></td>
+<td>Emergency vehicle</td>
+</tr>
+<tr>
+<td><code>safetyCar</code></td>
+<td>Safety car</td>
+</tr>
+<tr>
+<td><code>agriculture</code></td>
+<td>Agricultural vehicle</td>
+</tr>
+<tr>
+<td><code>military</code></td>
+<td>Military vehicle</td>
+</tr>
+<tr>
+<td><code>roadOperator</code></td>
+<td>Road operator</td>
+</tr>
+<tr>
+<td><code>taxi</code></td>
+<td>Taxi</td>
+</tr>
+</tbody>
+</table>
+<h3 id="fuel-types">Fuel types</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>petrol</code></td>
+</tr>
+<tr>
+<td><code>diesel</code></td>
+</tr>
+<tr>
+<td><code>electricity</code></td>
+</tr>
+<tr>
+<td><code>hydrogen</code></td>
+</tr>
+<tr>
+<td><code>lng</code></td>
+</tr>
+<tr>
+<td><code>cng</code></td>
+</tr>
+<tr>
+<td><code>adBlue</code></td>
+</tr>
+<tr>
+<td><code>other</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="route-announcement">Route announcement</h2>
+<p>Register a route for a vehicle. This is <strong>mandatory</strong> when iVRI priority is enabled (<code>iVRIPriorityEnabled: true</code>), and recommended for all other use cases as it enables us to provide route-specific events earlier.</p>
+<h3 id="create-or-update-route">Create or update route</h3>
+<p><code>PUT /routes</code></p>
+<h4 id="request-body-latlon-array">Request body (lat/lon array)</h4>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"route-456"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Amsterdam to Rotterdam"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"geoReferences"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"latLonArrayGeoReference"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"points"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">52.3676</span><span class="p">,</span><span class="w"> </span><span class="nt">"lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">4.9041</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">52.0799</span><span class="p">,</span><span class="w"> </span><span class="nt">"lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">4.3113</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">51.9225</span><span class="p">,</span><span class="w"> </span><span class="nt">"lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">4.4792</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"actors"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"associationType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"reference"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"uuid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vehicle-123"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"entityType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vehicle"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"actions"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"associationType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"inline"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"entity"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"actionType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"genericAction"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"startTime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-10-19T08:00:00Z"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"endTime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-10-19T17:00:00Z"</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="request-body-address">Request body (address)</h4>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"route-789"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Delivery to warehouse"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"geoReferences"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"addressGeoReference"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Warehouse Rotterdam"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"street"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Havenstraat"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"houseNumber"</span><span class="p">:</span><span class="w"> </span><span class="s2">"10"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"postalCode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3011 AB"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Rotterdam"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"country"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Netherlands"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"actors"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"associationType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"reference"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"uuid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vehicle-123"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"entityType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vehicle"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Unique identifier for this route</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>No</td>
+<td>Display name for the route</td>
+</tr>
+<tr>
+<td><code>geoReferences</code></td>
+<td>object</td>
+<td>Yes</td>
+<td>Geographic representation (see <a href="#geo-reference-types">geo reference types</a>)</td>
+</tr>
+<tr>
+<td><code>actors</code></td>
+<td>array</td>
+<td>Yes</td>
+<td>Exactly one actor linking the route to a vehicle</td>
+</tr>
+<tr>
+<td><code>actors[].associationType</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Must be <code>reference</code></td>
+</tr>
+<tr>
+<td><code>actors[].uuid</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>The vehicle ID this route belongs to</td>
+</tr>
+<tr>
+<td><code>actors[].entityType</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Must be <code>vehicle</code></td>
+</tr>
+<tr>
+<td><code>actions</code></td>
+<td>array</td>
+<td>No</td>
+<td>Optional time window for the route</td>
+</tr>
+<tr>
+<td><code>actions[].associationType</code></td>
+<td>string</td>
+<td>No</td>
+<td>Must be <code>inline</code> if provided</td>
+</tr>
+<tr>
+<td><code>actions[].entity.actionType</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Must be <code>genericAction</code></td>
+</tr>
+<tr>
+<td><code>actions[].entity.startTime</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>ISO 8601 timestamp</td>
+</tr>
+<tr>
+<td><code>actions[].entity.endTime</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>ISO 8601 timestamp (must be in the future)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Route lifecycle</p>
+<ul>
+<li>A route is stored for 12 hours by default, unless <code>startTime</code> and <code>endTime</code> are specified</li>
+<li>Submitting a new route for a vehicle that already has an active route will automatically replace the existing route</li>
+<li>Only one active route per vehicle is allowed at any time</li>
+<li>The vehicle referenced by <code>actors[].uuid</code> must be announced first</li>
+</ul>
+</div>
+<h4 id="response_1">Response</h4>
+<p><strong>200 OK</strong> - Returns the route object. Note that the response uses <code>geoReference</code> (singular) rather than <code>geoReferences</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"route-456"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Amsterdam to Rotterdam"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"creationDate"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-10-19T08:30:00Z"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"lastModified"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-10-19T08:30:00Z"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"geoReference"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"latLonArrayGeoReference"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"points"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">52.3676</span><span class="p">,</span><span class="w"> </span><span class="nt">"lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">4.9041</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">52.0799</span><span class="p">,</span><span class="w"> </span><span class="nt">"lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">4.3113</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">"lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">51.9225</span><span class="p">,</span><span class="w"> </span><span class="nt">"lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">4.4792</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"actors"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"associationType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"reference"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"uuid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vehicle-123"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"entityType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vehicle"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"actions"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"associationType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"inline"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"entity"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"actionType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"genericAction"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"startTime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-10-19T08:00:00Z"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"endTime"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-10-19T17:00:00Z"</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="get-route">Get route</h3>
+<p><code>GET /routes/{id}</code></p>
+<p>Returns the current route for the given ID.</p>
+<h3 id="delete-route">Delete route</h3>
+<p><code>DELETE /routes/{id}</code></p>
+<p>Removes a route. Returns <strong>200 OK</strong> on success.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can explicitly delete a route that is no longer needed, but submitting a new route via <code>PUT /routes</code> will also automatically replace any existing active route for the same vehicle.</p>
+</div>
+<h3 id="geo-reference-types">Geo reference types</h3>
+<p>Three geo reference types are supported:</p>
+<h4 id="latlonarraygeoreference-preferred"><code>latLonArrayGeoReference</code> (preferred)</h4>
+<p>An array of latitude/longitude points defining the route polyline. At least two points (start and end) are required. The more detailed the route, the more accurately we can provide route-specific events.</p>
+<h4 id="latlonpointgeoreference"><code>latLonPointGeoReference</code></h4>
+<p>A single latitude/longitude point. Requires <code>lat</code> and <code>lon</code> fields.</p>
+<h4 id="addressgeoreference"><code>addressGeoReference</code></h4>
+<p>An address-based reference. When used, we will determine the route coordinates. When only one address is provided, it is assumed to be the destination.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>street</code></td>
+<td>string</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>houseNumber</code></td>
+<td>string</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>houseNumberAddition</code></td>
+<td>string</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>postalCode</code></td>
+<td>string</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>city</code></td>
+<td>string</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>country</code></td>
+<td>string</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="error-responses">Error responses</h2>
+<p>All error responses are returned as JSON:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"invalidField"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Invalid value 'xyz'. Allowed values: [truck, bus, ...]"</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Validation errors may return an array of errors:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"missingField"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Field 'vehicleType' is required"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"invalidField"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Invalid value 'xyz' for field 'fuel'"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>HTTP Status</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Validation error or precondition not met</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Unauthorized - invalid or missing Bearer token</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Forbidden - vehicle has no features enabled</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Resource not found</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Internal server error</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Error Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>missingField</code></td>
+<td>A required field is missing</td>
+</tr>
+<tr>
+<td><code>invalidField</code></td>
+<td>A field has an invalid value</td>
+</tr>
+<tr>
+<td><code>invalidRequest</code></td>
+<td>Request-level validation failure</td>
+</tr>
+<tr>
+<td><code>invalidJson</code></td>
+<td>JSON parsing error</td>
+</tr>
+<tr>
+<td><code>recordNotFound</code></td>
+<td>Resource does not exist</td>
+</tr>
+<tr>
+<td><code>PRE_CONDITION_NOT_MET</code></td>
+<td>Business rule violation (e.g., vehicle not announced before route)</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+  
+    | Document version 1.0.0
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "1.0.0"}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+    
+  </body>
+</html>

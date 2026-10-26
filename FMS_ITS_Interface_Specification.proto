@@ -1,0 +1,505 @@
+// ITS-FMS protobuf interface specification
+//
+// Change log:
+// 2.4 09-jan-2024 Added traffic light details for priotalker
+// 2.3 23-sep-2023 Added wildlife crossing support
+// 2.2 24-apr-2023 Added restricted zone support
+// 2.1 24-apr-2023 Added gps_quality to LocationUpdateEvent + added heading to Location
+//                 Extended priorityContainer with requested direction/lane
+//                 Added wildlife crossing
+// 2.0 24-mar-2023 Released alongside v2.0 of functional-technical documentation
+// 1.2 02-mar-2023 Added details for overtaking bans
+// 1.1 11-feb-2023 Additional info for variable message signs + Added
+//                 comments from original documentation what containers should be filled
+//                 depending on the its_event_code
+// 1.0 12-jul-2022 TirePressure status changed to enum
+//                 Additional timestamp for location_update with device time.
+//                 Field numbering without gaps
+//                 Valid values of enum should not start at zero
+// 0.8 13-may-2022 Moved Movement from LaneInfo to TrafficLightStateInformation
+// 0.7 14-apr-2022 Replaced FmsItsContainer by FmsItsMessage for errorMessage
+//                 and added error for big time difference and way to return invalid proto message
+//                 Added support for multiple anomalies in a signal TirePressure message
+// 0.6 12-apr-2022 Added encapsulation message FmsItsMessage
+//                 Moved vehicle related info to FmsItsMessage and removed elsewhere
+//                 Added error message
+// 0.5 28-mar-2022 Changed type of coordinates in Location message to lat/lon pairs
+//                 Extended RoadConfigurationStatus + added max_speed to RoadConfiguration
+// 0.4 10-mar-2022 Major update:
+//                 Use google.protobuf.TImestamp i.s.o. uint64
+//                 Added LocationUpdateEvent, MeasurementType
+//                 Added straight arrow to trafficlight
+
+syntax = "proto3";
+
+package fmsitsinterface;
+
+option csharp_namespace = "DEFLogDefinitions.Proto3";
+option java_multiple_files = true;
+
+import "google/protobuf/timestamp.proto";  // when used in this definition it is expected that UTC timestamps are provided
+
+enum MessageType{
+  MESSAGETYPE_UNKNOWN = 0;
+  TIMESTAMP_MESSAGE = 1;
+  LOCATION_UPDATE = 2;
+  EVENT_MESSAGE = 3;     // both the InfoContainer as well as the ContentContainer are present
+  ERROR_MESSAGE = 4;
+}
+
+message FmsItsMessage {
+  MessageType     message_type = 1;
+  string          vehicle_id = 2;
+  FmsItsContainer container = 3;
+}
+
+message FmsItsContainer {
+
+  TimestampMessage timestamp_message = 1;  // Request/response message to check time synchronisation between 2 systems
+  InfoContainer info_container = 2;        // CSP to Vehicle: General information about the message not related to the event itself.
+  ContentContainer content_container = 3;  // CSP to Vehicle: More information about the content of the event.
+  LocationUpdateEvent location_update = 4; // FMS Vehicle to CSP: container used to convey location updates
+  ErrorMessage error_message = 5;          // In case messages cannot be handled, this message is used to inform the original sender
+
+}
+
+enum ErrorType{
+  ERRORTYPE_UNKNOWN = 0;
+  MISSING_FIELD = 1;          // an expected field is missing
+  INVALID_FIELD = 2;          // a field has an invalid/unsupported value
+  PRE_CONDITION_NOT_MET = 3;  // e.g. the required information via the API was not provided
+  DATA_RATE_ERROR = 4;        // locationUpdateEvents are not being received according to specification
+  NO_TIMESTAMP_ANSWER = 5;    // a timestamp response was not received within the expected timeframe
+  TIMEDIFF_TOO_BIG = 6;       // difference between clocks of FMS and CSP is too big
+  INVALID_PROTO = 7;          // proto message could not be decoded
+}
+
+message ErrorMessage {
+  ErrorType error_type = 1;
+  string error_message = 2;           // details of the error
+  string related_field = 3;           // if the error relates to a specific field, the name of the field is added
+  FmsItsMessage related_message = 4;  // the original input message the error is related to
+  bytes related_raw_message = 5;      // in case the original message could not be parsed, it is returned as raw byte array
+}
+
+message TimestampMessage {
+  google.protobuf.Timestamp request_transmission = 1;
+  google.protobuf.Timestamp request_reception = 2;
+  google.protobuf.Timestamp response_transmission = 3;
+}
+
+enum MeasurementUnit{
+  UNKNOWN = 0;
+
+  // speed units
+  KILOMETERS_PER_HOUR = 10;
+  METERS_PER_SECOND = 11;
+
+  // mass units
+  KILOGRAM = 20;
+  POUND = 21;
+
+  // length / height units
+  METER = 30;
+  CENTIMETER = 31;
+
+  // time units
+  MILLISECOND = 40;
+  SECOND = 41;
+  MINUTE = 42;
+  HOUR = 43;
+
+  // heading / bearing units
+  DEGREES = 50;  // allowed range in degrees [0, 360>
+}
+
+message MeasurementType{
+    int32 value = 1;
+    MeasurementUnit unit = 2;
+}
+
+// General information about the message not related to the event itself.
+message InfoContainer {
+
+  string author = 1;     // The CSP that created the message.
+  string event_id = 2;    // Unique ID generated by the CSP. Be careful that the eventID is not guaranteed to be unique across different CSPs, but has to be unique within the set of events of a single CSP.
+  enum MessageType {
+    UNKNOWN_MESSAGE_TYPE = 0;       // Unknown message type
+    NEW = 1;                        // Newly created message
+    UPDATE = 2;                     // Update of an existing message
+    DELETE = 3;                     // Deletion of an existing message.
+  }
+  MessageType message_type = 3;                 // messageType indicates the status of the message
+  int32 event_version = 4;                      // eventVersion indicates the version of the message with a unique eventId.
+  google.protobuf.Timestamp creation_time = 5;  // time of sending of the message (UTC+00:00).
+  int32 desired_interval = 6;                   // the requested interval sampling rate of GPS samples in order to facilitate a usecase. Unit of value is second. If filled in, location container has to contain a polygon where the higher frequency is required
+}
+
+// More information about the content of the event.
+message ContentContainer {
+
+  ItsEventCode its_event_code = 1;  // ITSEventCode is an integer referring to the usecase at hand.
+  EventInfo event_info = 2;         // container for event details
+}
+
+message EventInfo {
+  string event_text = 1;                             // Textual representation of ITSEventCode.
+  Location location = 2;                             // container for location details, compliant with EPSG 4326
+  StaticEventMetadata static_event_metadata = 3;     // Contains other containers for static events.
+  DynamicEventMetadata dynamic_event_metadata = 4;   // Contains other containers for dynamic events, its_event_code EMERGENCY_VEHICLE_APPROACHING, ROAD_INSPECTOR or GHOST_DRIVER_WARNING
+
+}
+
+message Point {
+  float latitude = 1;
+  float longitude = 2;
+}
+
+message Location {
+  repeated Point coordinates = 1;     // list of coordinates to represent location of event or desired frequency zone.
+                                      // Can be polygon (2D array), linestring (2D array) or point (1D array) object. Coordinates are expressed in EPSG:4326
+  enum CoordinatesType {
+    UNKNOWN_COORDINATES_TYPE = 0;     // Unknown coordinates type
+    LINE_STRING = 1;                  // Line string
+    POINT = 2;                        // Point
+    POLYGON = 3;                      // Polygon
+  }
+  CoordinatesType coordinates_type = 2; // type of coordinates field
+  MeasurementType heading = 3;          // driving direction for which the event is relevant. If relevant for all directions, this field is unused
+}
+
+message StaticEventMetadata {
+  enum WeatherConditions {
+    UNKNOWN_WEATHER_CONDITION = 0;  // Unknown weather condition
+    HEAVY_RAIN = 1;                 // Heavy rain
+    SLIPPERY_ROAD = 2;              // Slippery Road (ice, oil, ...)
+    FOG = 3;                        // Fog
+    HEAVY_WIND = 4;                 // Heavy Wind
+    HEAVY_SNOWFALL = 5;             // Heavy Snowfall
+    HAIL = 6;                       // Hail
+  }
+  WeatherConditions weather_conditions = 1;     // indicating weather events, its_event_code WEATHER_CONDITIONS
+  RoadConfiguration road_configuration = 2;     // object indicating status of road lanes, its_event_code LANE_CONFIGURATION
+  SpeedInfo speed_info = 3;                     // object indicating maximum and optimal speed, its_event_code MAXIMUM_SPEED or ADVISORY_SPEED_LIMIT
+  IvriContainer ivri_container = 4;             // object as placeholder for various traffic light usecases, its_event_code TRAFFIC_LIGHT_STATUS, TRAFFIC_LIGHT_TIMING,  ADVISORY_SPEED, RAIL_CROSSING_STATUS
+  LaneInfo lane_info = 5;                       // object indicating the lane for which the event is applicable, its_event_code LANE_CONFIGURATION, TRAFFIC_LIGHT_STATUS, TRAFFIC_LIGHT_TIMING
+  SensorInfo sensor_info = 6;                   // object as placeholder for usecases from category 5, its_event_code TIRE_PRESSURE_GAUGE, ALTIMETER, WEIGHT, PARKING_OCCUPATION, PARKING_RESERVATION
+  OvertakingInfo overtaking_info = 7;           // object with details for an overtaking ban, its_event_code OVERTAKING_BAN
+  RestrictedZone restricted_zone_info = 8;
+}
+
+message RoadConfiguration {
+  enum RoadConfigStatus {
+    option allow_alias = true;
+    UNKNOWN_ROAD_CONFIG_STATUS = 0;    // Unknown Status
+    OPEN = 1;                          // Open: 'falling' green arrow
+    CLOSED = 2;                        // Closed for all traffic: red cross 
+    CLOSED_FOR_ALL_TRAFFIC = 2;        // Closed for all traffic
+    MERGE_RIGHT = 3;                   // verdrijfpijl naar rechts
+    MERGE_LEFT = 4;                    // verdrijfpijl naar links
+    END_OF_RESTRICTIONS = 5;           // verkeersbord F08
+    CLOSED_FOR_YOU = 6;                // You cannot use this lane for your type of vehicle
+    CHANGED_MAX_SPEED = 7;             // temporary change of the maximum speed (matrixborden)
+    BLANK = 8;                         // Variable message sign is blank / turned off
+  }
+  RoadConfigStatus road_config_status = 1;  // Status indicates state of lane defined in container laneInfo
+  MeasurementType max_speed = 2;            // optional field in case the status is CHANGED_MAX_SPEED
+  enum RoadConfigLocation {
+    UNKNOWN_LOCATION = 0;
+    LOCATION_DOWNSTREAM = 1;           // object located downstream relative to the vehicle
+    LOCATION_UPSTREAM = 2;             // object located upstream relative to the vehicle
+  }
+  RoadConfigLocation road_config_location = 3;
+  bool flashing = 4;                   // are flashing lights present
+  bool red_border = 5;                 // is a red border present
+}
+
+message OvertakingInfo{
+  enum ApplicableVehicleType {
+	  UNKNOWN_APPLICABLE_VEHICLE_TYPE = 0;
+	  ALL_MOTORIZED = 1;            // any kind of motorized vehicle
+	  HGV = 2;                      // all kinds of trucks
+	  AGRICULTURE = 3;              // agricultural vehicles like tractors
+	  MOPED = 4;
+  }
+  repeated ApplicableVehicleType applicable_for = 1;
+  repeated ApplicableVehicleType except_for = 2;
+}
+
+message SpeedInfo {
+  int32 maximum_speed_limit = 1;            // maximum speed limit, its_event_code MAXIMUM_SPEED
+  int32 optimal_speed = 2;                  // optimal speed, its_event_code ADVISORY_SPEED_LIMIT
+  MeasurementUnit speed_limit_unit = 3;     // units in which maximumSpeedLimit and optimalSpeed are expressed, , its_event_code MAXIMUM_SPEED or ADVISORY_SPEED_LIMIT
+}
+
+message TrafficLightInformation{
+    enum IntersectionStatusType{
+        UNKNOWN_INTERSECTION_STATUS = 0;
+        NORMAL_OPERATION = 1;               // either fixed time or traffic dependent operation
+        MANUAL_CONTROL_ENABLED = 2;
+        STANDBY_OPERATION = 3;
+        FAILURE_FLASH = 4;
+        OFF = 5;
+        NO_VALID_MAP_AVAILABLE = 6;
+        NO_VALID_SPAT_AVAILABLE = 7;
+    }
+    IntersectionStatusType intersection_status = 1;
+    enum WhyWait {
+        NO_WAIT_REASON = 0;
+        PUBLIC_TRANSPORT_PRIORITY = 1;
+        EMERGENCY_VEHICLE_PRIORITY = 2;
+        TRAIN_PRIORITY = 3;
+        BRIDGE_OPEN = 4;
+        VEHICLE_HEIGHT = 5;
+        WEATHER = 6;
+        TRAFFIC_JAM = 7;
+        TUNNEL_CLOSURE = 8;
+        METERING_ACTIVE = 9;
+        TRUCK_PRIORITY = 10;
+        BICYCLE_PLATOON_PRIORITY = 11;
+        VEHICLE_PLATOON_PRIORITY = 12;
+        UNKNOWN_WAIT_REASON = 13;
+    }
+    WhyWait why_wait = 2;
+}
+
+// The IvriContainer is transmitted when a significant change occurs in the variables. Without change the message is transmitted every 10 seconds
+message IvriContainer {
+  PriorityContainer priority_container = 1;                             // object containing feedback on priority request, its_event_code PRIORITY
+  TrafficLightStateInformation traffic_light_state_information = 2;     // object containing information on traffic light states, its_event_code TRAFFIC_LIGHT_STATUS
+  TrafficLightTimingInformation traffic_light_timing_information = 3;   // object containing information on when traffic light state changes are expected, its_event_code TRAFFIC_LIGHT_TIMING
+  TrafficLightSpeedAdvice traffic_light_speed_advice = 4;               // object containing information on optimal speed to intersection, its_event_code ADVISORY_SPEED
+  TrafficLightInformation traffic_light_info = 5;
+}
+
+message PriorityContainer {
+  string status = 1;     // feedback on priority request, its_event_code PRIORITY
+  Maneuver maneuver = 2; // direction for which priority is requested
+  int32 lane_id = 3;     // lane for which priority is requested
+}
+
+message TrafficLightStateInformation {
+  enum CurrentState {
+    UNKNOWN_TRAFFIC_LIGHT_STATE = 0;    // Unknown traffic light state
+    RED = 1;                            // Red
+    AMBER = 2;                          // Amber
+    GREEN = 3;                          // Green
+    ORANGE_FLASHING = 4;                // Orange Flashing
+    DARK = 5;                           // Dark
+    NO_LIGHT = 6;                       // Lane without traffic light
+  }
+  CurrentState current_state = 1;    // current state of traffic light at lane specified in laneInfo
+  enum Arrow {
+    UNKNOWN_ARROW = 0;   // Unknown arrow
+    ARROW_NONE = 1;      // No arrow
+    ARROW_LEFT = 2;      // Left arrow
+    ARROW_RIGHT = 3;     // Right arrow
+    ARROW_STRAIGHT = 4;  // Straight arrow
+  }
+  Arrow arrow = 2; // Direction of the light
+  enum Movement {
+    UNKNOWN_MOVEMENT = 0;    // Unknown movement
+    PROTECTED = 1;           // Protected
+    PERMISSIVE = 2;          // Permissive
+  }
+  Movement movement = 3;     // Indicating whether an arrow is needed or a simple round dot. Protected = obligation to show arrow; Permissive = round dot
+  enum LightType {
+      UNKNOWN_LIGHT_TYPE = 0;
+      NO_LIGHT_TYPE = 1;
+      NORMAL_TRAFFIC_LIGHT = 2;
+      PUBLIC_TRANSPORT_LIGHT = 3;
+      BICYCLE_LIGHT = 4;
+      PEDESTRIAN_LIGHT = 5;
+  }
+  LightType type = 4;
+  string light_name = 5;
+}
+
+message TrafficLightTimingInformation {
+  google.protobuf.Timestamp min_end_time = 1;     // The element minEndTime is used to convey the earliest time possible at which the phase could change, except when unpredictable events relating to a pre-emption or priority call disrupt a currently active timing plan. (UTC+00:00).
+  google.protobuf.Timestamp max_end_time = 2;     // The element MaxEndTime is used to convey the latest time possible which the phase could change, except when unpredictable events relating to a pre-emption or priority call come into play and disrupt a currently active timing plan. (UTC+00:00)"
+  google.protobuf.Timestamp likely_time = 3;     // The element likelyTime is used to convey the most likely time the phase changes. This occurs between MinEndTime and MaxEndTime and is only relevant for traffic-actuated control programs. (UTC+00:00).
+
+}
+
+message TrafficLightSpeedAdvice {
+  string advice = 1;         // advice on speed, can be quantitative or qualitative
+  string advice_type = 2;    // type of advice
+
+}
+
+message LaneInfo {
+  int32 max_lane_id = 1;             // total number of lanes at event location, its_event_code LANE_CONFIGURATION, TRAFFIC_LIGHT_STATUS
+  int32 lane_id = 2;                 // indicating the lane at which the event occurs (counting from left to right, starting at 1 till max_lane_id), its_event_code LANE_CONFIGURATION, TRAFFIC_LIGHT_STATUS
+  repeated Maneuver maneuvers = 3;   // The different maneuvers for which this traffic light gives info, its_event_code LANE_CONFIGURATION, TRAFFIC_LIGHT_STATUS
+}
+
+message Maneuver {
+  enum Direction {
+    UNKNOWN_DIRECTION = 0;    // Unknown direction
+    STRAIGHT = 1;             // Straight
+    LEFT = 2;                 // Left
+    RIGHT = 3;                // Right
+    U_TURN = 4;               // U-Turn
+    UNSPECIFIED = 5;          // Unspecified
+  }
+  repeated Direction direction = 1;  // the list contains integers indicating the possible directions from the traffic light
+  bool always_yield = 2;             // boolean value indicating whether the road user should always give priority to intersecting traffic (cfr. orange flashing light)
+
+}
+
+message SensorInfo {
+  TirePressure tire_pressure = 1;       // object containing information on tire pressures, its_event_code TIRE_PRESSURE_GAUGE
+  VehicleWeight vehicle_weight = 2;     // object containing information on vehicle weight, its_event_code WEIGHT
+  MeasurementType vehicle_height = 3;   // object containing information on vehicle height, its_event_code ALTIMETER
+  WildLifeDetails wildlife_details = 4; // object containing information on where wildlife is detected, its_event_code WILDLIFE_CROSSING
+
+}
+
+message TirePressure {
+  enum VehicleTirePressureStatus {
+    UNKNOWN_STATUS = 0;  // Unknown status
+    OK = 1;              // OK: all tires seem to be OK
+    NOK_SUSPECT = 2;     // Not OK: at least one tire is suspect and none seem to be flat
+    NOK_FLAT = 3;        // Not OK: at least one tire seems to be flat
+  }
+  VehicleTirePressureStatus status = 1;   // indicating overall status of tire pressure of the vehicle.
+  int32 axle_count = 2;                   // integer indicating total number of axles of the vehicle
+  repeated Anomalies anomalies = 3;       // object containing detailed information on pressure of every tire that is not OK
+
+}
+
+message Anomalies {
+  int32 axle = 1;             // indicating axle, counting starts from front of vehicle
+  enum Side {
+    UNKNOWN_SIDE = 0;         // Unknown side
+    LEFT = 1;                 // Left
+    RIGHT = 2;                // Right
+  }
+  Side side = 2;              // indicating side of axle
+  enum TireStatus {
+    UNKNOWN_STATUS = 0;       // Unknown measurement
+    FLAT = 1;                 // Flat
+    SUSPECT = 2;              // Suspect
+  }
+  TireStatus measurement = 3; // indicating state of tire
+
+}
+
+message VehicleWeight {
+  int32 axle_count = 1;                                 // integer indicating total number of axles of the vehicle
+  repeated WeightMeasurements weight_measurements = 2;  // contains the weight measurements of the vehicle per axle
+
+}
+
+message WeightMeasurements {
+  int32 axle = 1;             // indicating axle, counting starts from top of vehicle
+  MeasurementType weight = 2;
+}
+
+message DynamicEventMetadata {
+  MeasurementType event_speed = 1;
+  MeasurementType event_heading = 2;         // Heading of dynamic event in degrees
+
+}
+
+// Message adapted from Open Trip Model (OTM v5)
+// License plate information is omitted for privacy reasons
+// https://otm5.opentripmodel.org/
+message LocationUpdateEvent {
+
+	enum GeoReferenceType {
+		GEOREFERENCETYPE_UNKNOWN = 0;
+		LAT_LON_POINT_GEO_REFERENCE = 1;  // only lat/lon positions are allowed in this interface, other OTM references are excluded
+	}
+
+	message GeoReference {
+		double lat = 1;
+		double lon = 2;
+		GeoReferenceType type = 3;
+	}
+
+    enum LifeCycle {
+        LIFECYCLE_UNKNOWN = 0;
+        ACTUAL = 1; // in this interface only actual updates are allowed
+    }
+
+    string id = 1;                                // Uniquely identifies this locationUpdateEvent.
+    google.protobuf.Timestamp creation_date = 2;  // should contain the timestamp of the GPS fix in UTC
+    GeoReference geo_reference = 3;
+    MeasurementType speed = 4;
+    MeasurementType heading = 5;
+    LifeCycle lifecycle = 6;                      // when is the action taking place. Only actual updates are allowed
+    google.protobuf.Timestamp device_date = 7;    // optional timestamp when the position update was received on the FMS device and can be used when the GPS fix seems to be far of the NTP time
+    float gps_quality = 8; 			  // deviation in meters with 95% probability
+}
+
+enum ItsEventCode {
+
+    // Category 0    Special messages
+    UNKNOWN_ITS_EVENT_CODE = 0;               // Unknown ITS event code
+    CHANGED_FREQUENCY_REQUEST = 1;            // Frequency requested to change to X Hz
+
+    // Category 1    Signaling and speed advice
+    MAXIMUM_SPEED = 101;                      // Maximum allowed speed of x km/h
+    ADVISORY_SPEED_LIMIT = 102;               // Advised speed of x km/h
+    OVERTAKING_BAN = 103;                     // Overtaking prohibited
+    LANE_CONFIGURATION = 104;                 // Lane configuration changed
+
+    // Category 2    Information about dangerous situations
+    ROAD_WORKS = 201;                         // Road works ahead
+    EVENTS = 202;                             // Event ahead
+    PLACEHOLDER = 203;                        // Rail Level crossings, Placeholder
+    TRAFFIC_JAM = 204;                        // Start of traffic jam, Traffic jam ahead
+    STATIONARY_VEHICLE = 205;                 // Stationary vehicle ahead
+    INCIDENT = 206;                           // Incident ahead
+    WEATHER_CONDITIONS = 207;                 // Bad weather conditions ahead
+    OBJECTS_ON_ROAD = 208;                    // Objects/cargo on the road
+    EMERGENCY_VEHICLE_APPROACHING = 209;      // Approaching emergency services (early warning)
+    ROAD_INSPECTOR = 210;                     // Road inspector on the road
+    BRIDGE_OPENING = 211;                     // Open bridge ahead
+    GHOST_DRIVER_WARNING = 212;               // Ghost driver approaching
+
+    // Category 3    Priority with iVRI
+    PRIORITY = 301;                           // Priority status update
+    SELECTIVE_ACCESS = 302;                   // Selective access systems (bollards, etc.), placeholder
+
+    // Category 4    Current information iVRI
+    TRAFFIC_LIGHT_STATUS = 401;               // Traffic light status update
+    TRAFFIC_LIGHT_TIMING = 402;               // Time to green and time to red, traffic light timing update
+    ADVISORY_SPEED = 403;                     // Traffic light optimal speed advice
+    RAIL_CROSSING_STATUS = 404;               // Rail Level crossing time to open, placeholder
+    TRAFFIC_LIGHT_INFO = 410;                 // Yunex Traffic additional info for Priotalker
+
+    // Category 5    Sensor data
+    TIRE_PRESSURE_GAUGE = 501;                // Tire pressure information
+    ALTIMETER = 502;                          // Vehicle height information
+    WEIGHT = 503;                             // Vehicle weight information
+    PARKING_OCCUPATION = 504;                 // Parking + loading/unloading area (occupation), placeholder
+    PARKING_RESERVATION = 505;                // Parking + loading/unloading area (reservation), placeholder
+    WILDLIFE_CROSSING = 506;                  // Animals crossing the road
+
+    // Category 6 new ITS
+    RESTRICTED_ACCESS = 601;                  // Zone with restricted access
+}
+
+message WildLifeDetails {
+	Point zone_start = 1;  // start of zone where crossing animals are expected
+	Point zone_end = 2;    // end of zone where crossing animals are expected
+	google.protobuf.Timestamp valid_till = 3; // expected time this message will expire
+}
+
+message RestrictedZone {
+	enum RestrictionClass {
+		UNKNOWN_RESTRICTION_CLASS = 0;  // Unknown restriction class
+		WARNING = 1;                    // Advised not to enter
+		PROHIBITED = 2;                 // Entrance is prohibited
+	}
+    RestrictionClass restriction_type = 1;     //
+	Point            entry_location = 2;       // geo location where you enter the restricted zone
+	Maneuver         restricted_direction = 3; // direction you are not allowed to go at the entrypoint
+	Maneuver         suggested_direction = 4;  // the suggested direction at the last_turn_location to take
+	repeated Point   suggested_route = 5;      // preferred route as provided by the authorities
+    Point            last_turn_location = 6;   // last location where you can avoid arriving at the restricted zone
+    string           restriction_id = 7;       // The id of the restriction zone as provided by DEFLog
+}

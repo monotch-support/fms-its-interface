@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://monotch-support.github.io/fms-its-interface/</loc>
+         <lastmod>2026-10-26</lastmod>
+    </url>
+    <url>
+         <loc>https://monotch-support.github.io/fms-its-interface/authentication/</loc>
+         <lastmod>2026-10-26</lastmod>
+    </url>
+    <url>
+         <loc>https://monotch-support.github.io/fms-its-interface/event-codes/</loc>
+         <lastmod>2026-10-26</lastmod>
+    </url>
+    <url>
+         <loc>https://monotch-support.github.io/fms-its-interface/protobuf/</loc>
+         <lastmod>2026-10-26</lastmod>
+    </url>
+    <url>
+         <loc>https://monotch-support.github.io/fms-its-interface/rest-api/</loc>
+         <lastmod>2026-10-26</lastmod>
+    </url>
+    <url>
+         <loc>https://monotch-support.github.io/fms-its-interface/sequence-diagrams/</loc>
+         <lastmod>2026-10-26</lastmod>
+    </url>
+    <url>
+         <loc>https://monotch-support.github.io/fms-its-interface/use-cases/</loc>
+         <lastmod>2026-10-26</lastmod>
+    </url>
+    <url>
+         <loc>https://monotch-support.github.io/fms-its-interface/websocket/</loc>
+         <lastmod>2026-10-26</lastmod>
+    </url>
+</urlset>
