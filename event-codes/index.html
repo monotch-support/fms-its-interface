@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -712,12 +712,17 @@
 <tr>
 <td>001</td>
 <td><code>CHANGED_FREQUENCY_REQUEST</code></td>
-<td>CSP requests the FMS to change the location update frequency to X Hz</td>
+<td>CSP requests the FMS to change the location update interval to X seconds</td>
 </tr>
 <tr>
 <td>104</td>
 <td><code>LANE_CONFIGURATION</code></td>
 <td>Lane configuration changed (variable message signs)</td>
+</tr>
+<tr>
+<td>209</td>
+<td><code>EMERGENCY_VEHICLE_APPROACHING</code></td>
+<td>Approaching emergency services (early warning)</td>
 </tr>
 <tr>
 <td>301</td>
@@ -733,11 +738,6 @@
 <td>402</td>
 <td><code>TRAFFIC_LIGHT_TIMING</code></td>
 <td>Time to green / time to red</td>
-</tr>
-<tr>
-<td>209</td>
-<td><code>EMERGENCY_VEHICLE_APPROACHING</code></td>
-<td>Approaching emergency services (early warning)</td>
 </tr>
 </tbody>
 </table>
@@ -1006,7 +1006,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "1.0.0"}</script>
     
     
-      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>

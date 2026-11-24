@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -502,10 +502,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reconnection" class="md-nav__link">
+  <a href="#connection-lifetime-and-reconnection" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Reconnection
+        Connection lifetime and reconnection
       
     </span>
   </a>
@@ -788,10 +788,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reconnection" class="md-nav__link">
+  <a href="#connection-lifetime-and-reconnection" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Reconnection
+        Connection lifetime and reconnection
       
     </span>
   </a>
@@ -819,16 +819,16 @@
 
 
 <h1 id="websocket-interface">WebSocket interface</h1>
-<p>The WebSocket interface is used for all real-time, bidirectional communication. Messages are encoded using <a href="https://developers.google.com/protocol-buffers">Protocol Buffers</a> (proto3).</p>
+<p>The WebSocket interface is used for all real-time, bidirectional communication. Messages are encoded using <a href="https://protobuf.dev">Protocol Buffers</a> (proto3).</p>
 <h2 id="connection">Connection</h2>
-<p>Connect to the WebSocket endpoint at <code>{baseUrl}/ws</code> using the same Bearer token as for the REST API. Each vehicle requires its own WebSocket connection.</p>
-<div class="highlight"><pre><span></span><code>wss://{baseUrl}/ws
+<p>Connect to the WebSocket URL you received during onboarding (<code>{baseUrl}/ws</code>, using the <code>wss://</code> scheme) with the same Bearer token as for the REST API. Each vehicle requires its own WebSocket connection.</p>
+<div class="highlight"><pre><span></span><code>GET {baseUrl}/ws  (wss://)
 Authorization: Bearer &lt;api_key&gt;
 </code></pre></div>
 <p>TLS 1.3 is used for encryption.</p>
 <div class="admonition warning">
 <p class="admonition-title">Inactivity timeout</p>
-<p>If no activity is detected on an open WebSocket during 5 minutes, the connection will be closed.</p>
+<p>If the CSP receives no message on an open WebSocket for 120 seconds, the connection will be closed.</p>
 </div>
 <h2 id="why-protocol-buffers">Why Protocol Buffers?</h2>
 <p>The dynamic data exchanged over the WebSocket has high-frequency, low-latency requirements. Protocol Buffers provide:</p>
@@ -839,7 +839,7 @@ Authorization: Bearer &lt;api_key&gt;
 </ul>
 <p>Use the <a href="https://github.com/protocolbuffers/protobuf?tab=readme-ov-file#protobuf-runtime-installation">protobuf runtime library</a> for your development environment to parse incoming messages and serialize outgoing messages.</p>
 <h2 id="message-structure">Message structure</h2>
-<p>All WebSocket communication uses a single envelope message format (<code>FmsItsMessage</code>) containing three fields:</p>
+<p>All WebSocket communication uses a single envelope message format (<code>FmsItsMessage</code>) containing three fields. Field names on this page are in camelCase, as most generated protobuf code uses them; the <a href="../protobuf/">Protobuf specification</a> uses the snake_case names from the <code>.proto</code> file (for example <code>vehicleId</code> is <code>vehicle_id</code>).</p>
 <table>
 <thead>
 <tr>
@@ -857,7 +857,7 @@ Authorization: Bearer &lt;api_key&gt;
 <tr>
 <td><code>vehicleId</code></td>
 <td>string</td>
-<td>The vehicle this message relates to</td>
+<td>The vehicle this message relates to. Must be the <code>id</code> used in <code>PUT /vehicles</code></td>
 </tr>
 <tr>
 <td><code>container</code></td>
@@ -910,7 +910,7 @@ Authorization: Bearer &lt;api_key&gt;
 <tbody>
 <tr>
 <td><code>LOCATION_UPDATE</code></td>
-<td><code>locationUpdateEvent</code></td>
+<td><code>locationUpdate</code></td>
 </tr>
 <tr>
 <td><code>TIMESTAMP_MESSAGE</code></td>
@@ -928,30 +928,38 @@ Authorization: Bearer &lt;api_key&gt;
 </table>
 <h2 id="location-updates">Location updates</h2>
 <p>The FMS party must send location updates for each vehicle over its WebSocket connection. Updates must be sent as a stream (not batched) to support real-time C-ITS services.</p>
-<p><strong>Default rate:</strong> At least 1 update every 5 seconds (0.2 Hz).</p>
-<p>When approaching an iVRI, we may request higher frequency updates (up to 1 Hz) via a changed frequency request if <code>dynamicRate</code> is enabled.</p>
-<p>Each location update should include:</p>
+<p><strong>Default rate:</strong> At least 1 update every 5 seconds (0.2 Hz). The traffic light and priority use cases need at least 1 update every second (1 Hz) near an iVRI (the intersection area):</p>
 <ul>
-<li>Latitude and longitude</li>
-<li>Heading (degrees)</li>
-<li>Speed</li>
-<li>GPS timestamp</li>
-<li>Device timestamp (local clock at time of GPS fix)</li>
-<li>GPS quality (deviation in meters, 95% probability)</li>
+<li><strong>With <code>dynamicRate</code> enabled (recommended):</strong> the CSP sends the required interval with a <code>CHANGED_FREQUENCY_REQUEST</code> event, including when 1 Hz is needed near an iVRI. The requested interval replaces the default rate. See <a href="../use-cases/#dynamic-sampling">Dynamic sampling</a>.</li>
+<li><strong>Without <code>dynamicRate</code>:</strong> send at least 1 update per second while the traffic light or priority use cases are active for the vehicle.</li>
+</ul>
+<p>Each location update must include the following fields. Updates without them are discarded:</p>
+<ul>
+<li><code>geoReference</code> - latitude and longitude, with <code>type</code> set to <code>LAT_LON_POINT_GEO_REFERENCE</code></li>
+<li><code>heading</code> - with <code>unit</code> set to <code>DEGREES</code></li>
+<li><code>speed</code> - with <code>unit</code> set to <code>KILOMETERS_PER_HOUR</code></li>
+<li><code>creationDate</code> - GPS fix timestamp (UTC)</li>
+</ul>
+<p>The following fields should also be included:</p>
+<ul>
+<li><code>id</code> - unique ID for this update</li>
+<li><code>lifecycle</code> - set to <code>ACTUAL</code></li>
+<li><code>gpsQuality</code> - deviation in meters, 95% probability</li>
+<li><code>deviceDate</code> - device clock timestamp, useful when the GPS time differs from network time</li>
 </ul>
 <div class="admonition info">
 <p class="admonition-title">GPS accuracy</p>
-<p>GPS quality is crucial for accurate event matching. For the iVRI priority use case, we must be able to map coordinates to the planned route. Too much deviation will prevent priority requests.</p>
+<p>GPS quality is crucial for accurate event matching. For the iVRI priority use case, the CSP must be able to map coordinates to the planned route. Too much deviation will prevent priority requests.</p>
 </div>
 <h2 id="time-synchronization">Time synchronization</h2>
-<p>We regularly send timestamp requests (typically every minute) to verify clock synchronization. The FMS party must respond as quickly as possible.</p>
+<p>The CSP regularly sends timestamp requests (typically every minute) to verify clock synchronization. The FMS party must respond as quickly as possible.</p>
 <h3 id="timestamp-request-csp-fms">Timestamp request (CSP → FMS)</h3>
 <p>Contains:</p>
 <ul>
-<li><code>requestTransmission</code> - timestamp when we sent the request</li>
+<li><code>requestTransmission</code> - timestamp when the CSP sent the request</li>
 </ul>
 <h3 id="timestamp-response-fms-csp">Timestamp response (FMS → CSP)</h3>
-<p>Contains:</p>
+<p>Send the response as a <code>TIMESTAMP_MESSAGE</code> with the same <code>vehicleId</code> as the request. It contains:</p>
 <ul>
 <li><code>requestTransmission</code> - copied from the request</li>
 <li><code>requestReception</code> - timestamp when the FMS received the request</li>
@@ -959,10 +967,10 @@ Authorization: Bearer &lt;api_key&gt;
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>If the average time difference consistently exceeds 3 seconds, or no response is received within 3 seconds, an error message will be sent.</p>
+<p>If the average time difference consistently exceeds 3 seconds, the CSP sends a <code>TIMEDIFF_TOO_BIG</code> error message. If no response is received within 3 seconds, the CSP sends a <code>NO_TIMESTAMP_ANSWER</code> error message.</p>
 </div>
 <h2 id="event-messages">Event messages</h2>
-<p>We send ITS event messages containing traffic and infrastructure information relevant to the vehicle's current location and route. Each event message contains:</p>
+<p>The CSP sends ITS event messages containing traffic and infrastructure information relevant to the vehicle's current location and route. Each event message contains:</p>
 <ul>
 <li><strong>Info container</strong> - General metadata about the message (not event-specific)</li>
 <li><strong>Content container</strong> - The actual event data, varying by event type</li>
@@ -1012,12 +1020,36 @@ Authorization: Bearer &lt;api_key&gt;
 </tr>
 </tbody>
 </table>
-<h2 id="reconnection">Reconnection</h2>
-<p>In case of disconnection:</p>
-<ul>
-<li><strong>Within 24 hours</strong> of vehicle registration: only reconnect the WebSocket</li>
-<li><strong>After 24 hours</strong>: re-submit vehicle and route information via the REST API before reconnecting the WebSocket</li>
-</ul>
+<h2 id="connection-lifetime-and-reconnection">Connection lifetime and reconnection</h2>
+<p>Three independent timers apply:</p>
+<table>
+<thead>
+<tr>
+<th>Timer</th>
+<th>Duration</th>
+<th>What happens when it expires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WebSocket inactivity</td>
+<td>120 seconds without a message from the FMS</td>
+<td>The WebSocket is closed. Reopen it.</td>
+</tr>
+<tr>
+<td>Vehicle announcement</td>
+<td>24 hours after the last <code>PUT /vehicles</code></td>
+<td>The vehicle expires and its open WebSocket is closed (close code 1003). Send <code>PUT /vehicles</code> again, then reopen the WebSocket.</td>
+</tr>
+<tr>
+<td>Route announcement</td>
+<td>12 hours after <code>PUT /routes</code>, or at <code>endTime</code> if that is earlier</td>
+<td>The route is removed. Send <code>PUT /routes</code> again if a route is still needed.</td>
+</tr>
+</tbody>
+</table>
+<p>To avoid interruptions, re-announce the vehicle before its 24 hours expire, also while the WebSocket is open.</p>
+<p>If the connection closes for any reason, check whether the vehicle (24 hours) and route (12 hours) announcements are still valid, re-announce them if needed, and reconnect the WebSocket.</p>
 
 
 
@@ -1073,7 +1105,7 @@ Authorization: Bearer &lt;api_key&gt;
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "1.0.0"}</script>
     
     
-      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>

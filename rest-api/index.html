@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -527,10 +527,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#latlonarraygeoreference-preferred" class="md-nav__link">
+  <a href="#latlonarraygeoreference-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        latLonArrayGeoReference (preferred)
+        latLonArrayGeoReference (recommended)
       
     </span>
   </a>
@@ -935,10 +935,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#latlonarraygeoreference-preferred" class="md-nav__link">
+  <a href="#latlonarraygeoreference-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        latLonArrayGeoReference (preferred)
+        latLonArrayGeoReference (recommended)
       
     </span>
   </a>
@@ -1012,7 +1012,8 @@
 <p>The REST API is based on the <a href="https://otm5.opentripmodel.org/">Open Trip Model 5.0</a> and is used to exchange vehicle and route information. All requests and responses use JSON over HTTPS.</p>
 <p>All requests require a Bearer token in the <code>Authorization</code> header. See <a href="../authentication/">Authentication</a> for details.</p>
 <h2 id="vehicle-announcement">Vehicle announcement</h2>
-<p>Register a vehicle that will connect to our platform. This must be done <strong>at least every 24 hours</strong> to keep the vehicle active.</p>
+<p>Register a vehicle that will connect to the CSP. This must be done <strong>at least every 24 hours</strong> to keep the vehicle active. When the announcement expires, the vehicle's open WebSocket is closed.</p>
+<p>The services available for a vehicle are determined by your contract (see <a href="../authentication/#authorization">Authorization</a>). If your contract enables no services, the announcement is rejected with <strong>403 Forbidden</strong>.</p>
 <h3 id="create-or-update-vehicle">Create or update vehicle</h3>
 <p><code>PUT /vehicles</code></p>
 <h4 id="request-body">Request body</h4>
@@ -1042,7 +1043,7 @@
 <td><code>id</code></td>
 <td>string</td>
 <td>Yes</td>
-<td>Unique identifier for this vehicle (valid for 24 hours)</td>
+<td>Unique identifier for this vehicle</td>
 </tr>
 <tr>
 <td><code>name</code></td>
@@ -1084,7 +1085,7 @@
 <td><code>externalAttributes.dynamicRate</code></td>
 <td>boolean</td>
 <td>No</td>
-<td>Set to <code>true</code> for dynamic location update intervals, <code>false</code> for fixed 1 Hz updates</td>
+<td>Set to <code>true</code> to let the CSP adjust the location update interval dynamically (see <a href="../use-cases/#dynamic-sampling">Dynamic sampling</a>). Recommended for the traffic light and priority use cases. <code>false</code> for the fixed rates (see <a href="../websocket/#location-updates">Location updates</a>)</td>
 </tr>
 </tbody>
 </table>
@@ -1246,7 +1247,7 @@
 </table>
 <hr />
 <h2 id="route-announcement">Route announcement</h2>
-<p>Register a route for a vehicle. This is <strong>mandatory</strong> when iVRI priority is enabled (<code>iVRIPriorityEnabled: true</code>), and recommended for all other use cases as it enables us to provide route-specific events earlier.</p>
+<p>Register a route for a vehicle. This is <strong>mandatory</strong> when iVRI priority is enabled (<code>iVRIPriorityEnabled: true</code>), and recommended for all other use cases as it enables the CSP to provide route-specific events earlier.</p>
 <h3 id="create-or-update-route">Create or update route</h3>
 <p><code>PUT /routes</code></p>
 <h4 id="request-body-latlon-array">Request body (lat/lon array)</h4>
@@ -1363,33 +1364,34 @@
 <tr>
 <td><code>actions[].associationType</code></td>
 <td>string</td>
-<td>No</td>
-<td>Must be <code>inline</code> if provided</td>
+<td>If <code>actions</code> is given</td>
+<td>Must be <code>inline</code></td>
 </tr>
 <tr>
 <td><code>actions[].entity.actionType</code></td>
 <td>string</td>
-<td>Yes</td>
+<td>If <code>actions</code> is given</td>
 <td>Must be <code>genericAction</code></td>
 </tr>
 <tr>
 <td><code>actions[].entity.startTime</code></td>
 <td>string</td>
-<td>Yes</td>
-<td>ISO 8601 timestamp</td>
+<td>If <code>actions</code> is given</td>
+<td>ISO 8601 timestamp. The route becomes active at this time</td>
 </tr>
 <tr>
 <td><code>actions[].entity.endTime</code></td>
 <td>string</td>
-<td>Yes</td>
-<td>ISO 8601 timestamp (must be in the future)</td>
+<td>If <code>actions</code> is given</td>
+<td>ISO 8601 timestamp (must be in the future). <code>startTime</code> and <code>endTime</code> must be sent together; a request with only one of them is rejected</td>
 </tr>
 </tbody>
 </table>
 <div class="admonition info">
 <p class="admonition-title">Route lifecycle</p>
 <ul>
-<li>A route is stored for 12 hours by default, unless <code>startTime</code> and <code>endTime</code> are specified</li>
+<li>A route expires 12 hours after it was submitted. If <code>endTime</code> is earlier, the route expires at <code>endTime</code>; a time window cannot extend a route beyond 12 hours</li>
+<li>With a time window, the route is only active from <code>startTime</code>. Before that, no route-specific events or priority requests are provided. Because the 12 hours count from submission, a later <code>startTime</code> shortens the active period (for example, <code>startTime</code> 2 hours and <code>endTime</code> 20 hours after submission gives an active period from 2 to 12 hours after submission)</li>
 <li>Submitting a new route for a vehicle that already has an active route will automatically replace the existing route</li>
 <li>Only one active route per vehicle is allowed at any time</li>
 <li>The vehicle referenced by <code>actors[].uuid</code> must be announced first</li>
@@ -1432,21 +1434,23 @@
 <h3 id="get-route">Get route</h3>
 <p><code>GET /routes/{id}</code></p>
 <p>Returns the current route for the given ID.</p>
+<p><strong>200 OK</strong> - Route found and returned.</p>
+<p><strong>404 Not Found</strong> - Route not found.</p>
 <h3 id="delete-route">Delete route</h3>
 <p><code>DELETE /routes/{id}</code></p>
-<p>Removes a route. Returns <strong>200 OK</strong> on success.</p>
+<p>Removes a route. Returns <strong>200 OK</strong>, also when no route with this ID exists.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>You can explicitly delete a route that is no longer needed, but submitting a new route via <code>PUT /routes</code> will also automatically replace any existing active route for the same vehicle.</p>
 </div>
 <h3 id="geo-reference-types">Geo reference types</h3>
-<p>Three geo reference types are supported:</p>
-<h4 id="latlonarraygeoreference-preferred"><code>latLonArrayGeoReference</code> (preferred)</h4>
-<p>An array of latitude/longitude points defining the route polyline. At least two points (start and end) are required. The more detailed the route, the more accurately we can provide route-specific events.</p>
+<p>Three geo reference types are supported. <code>latLonArrayGeoReference</code> is recommended: a path-based route gives the most accurate route-specific events and priority requests.</p>
+<h4 id="latlonarraygeoreference-recommended"><code>latLonArrayGeoReference</code> (recommended)</h4>
+<p>An array of latitude/longitude points defining the route polyline. At least two points (start and end) are required. The more detailed the route, the more accurately the CSP can provide route-specific events.</p>
 <h4 id="latlonpointgeoreference"><code>latLonPointGeoReference</code></h4>
-<p>A single latitude/longitude point. Requires <code>lat</code> and <code>lon</code> fields.</p>
+<p>A single latitude/longitude point, used as the destination. Requires <code>lat</code> and <code>lon</code> fields. The CSP determines the route coordinates to this point.</p>
 <h4 id="addressgeoreference"><code>addressGeoReference</code></h4>
-<p>An address-based reference. When used, we will determine the route coordinates. When only one address is provided, it is assumed to be the destination.</p>
+<p>A single address, used as the destination. The CSP determines the route coordinates to this address.</p>
 <table>
 <thead>
 <tr>
@@ -1535,11 +1539,15 @@
 </tr>
 <tr>
 <td>403</td>
-<td>Forbidden - vehicle has no features enabled</td>
+<td>Forbidden - your contract enables no services for this vehicle (see <a href="../authentication/#authorization">Authorization</a>)</td>
 </tr>
 <tr>
 <td>404</td>
 <td>Resource not found</td>
+</tr>
+<tr>
+<td>409</td>
+<td>Conflict - another route for the same vehicle was processed at the same moment; resend if needed</td>
 </tr>
 <tr>
 <td>500</td>
@@ -1547,6 +1555,7 @@
 </tr>
 </tbody>
 </table>
+<p>Error codes are case-sensitive; match them exactly as listed.</p>
 <table>
 <thead>
 <tr>
@@ -1578,6 +1587,18 @@
 <tr>
 <td><code>PRE_CONDITION_NOT_MET</code></td>
 <td>Business rule violation (e.g., vehicle not announced before route)</td>
+</tr>
+<tr>
+<td><code>concurrentRouteAnnounce</code></td>
+<td>Another route for the same vehicle was processed at the same moment</td>
+</tr>
+<tr>
+<td><code>UNAUTHORIZED</code></td>
+<td>Invalid or missing Bearer token</td>
+</tr>
+<tr>
+<td><code>FORBIDDEN</code></td>
+<td>Your contract enables no services for this vehicle</td>
 </tr>
 </tbody>
 </table>
@@ -1636,7 +1657,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "1.0.0"}</script>
     
     
-      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>

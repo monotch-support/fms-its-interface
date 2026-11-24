@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -574,8 +574,30 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#location" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Location
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynamic-event-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic event metadata
+      
+    </span>
+  </a>
   
 </li>
       
@@ -618,6 +640,17 @@
     <span class="md-ellipsis">
       
         Priority container
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#traffic-light-state-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traffic light state information
       
     </span>
   </a>
@@ -678,6 +711,17 @@
     <span class="md-ellipsis">
       
         Error message
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#measurement-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measurement type
       
     </span>
   </a>
@@ -840,8 +884,30 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#location" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Location
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynamic-event-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic event metadata
+      
+    </span>
+  </a>
   
 </li>
       
@@ -884,6 +950,17 @@
     <span class="md-ellipsis">
       
         Priority container
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#traffic-light-state-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traffic light state information
       
     </span>
   </a>
@@ -944,6 +1021,17 @@
     <span class="md-ellipsis">
       
         Error message
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#measurement-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measurement type
       
     </span>
   </a>
@@ -1035,7 +1123,7 @@
 <span class="w">  </span><span class="kt">float</span><span class="w">                     </span><span class="na">gps_quality</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span><span class="w">    </span><span class="c1">// Deviation in meters (95%)</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>The <code>GeoReference</code> only supports <code>LAT_LON_POINT_GEO_REFERENCE</code>:</p>
+<p><code>GeoReference</code>, <code>GeoReferenceType</code> and <code>LifeCycle</code> are nested inside <code>LocationUpdateEvent</code>. The <code>GeoReference</code> only supports <code>LAT_LON_POINT_GEO_REFERENCE</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">message</span><span class="w"> </span><span class="nc">GeoReference</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kt">double</span><span class="w">           </span><span class="na">lat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">double</span><span class="w">           </span><span class="na">lon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
@@ -1053,7 +1141,7 @@
 <h2 id="event-message">Event message</h2>
 <p>ITS events are sent from CSP to FMS and consist of two containers:</p>
 <h3 id="info-container">Info container</h3>
-<p>General metadata about the event:</p>
+<p>General metadata about the event. Note that <code>message_type</code> here uses the nested enum <code>InfoContainer.MessageType</code> (<code>NEW</code>, <code>UPDATE</code>, <code>DELETE</code>), not the envelope <code>MessageType</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="kd">message</span><span class="w"> </span><span class="nc">InfoContainer</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kt">string</span><span class="w">                    </span><span class="na">author</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">           </span><span class="c1">// CSP that created the message</span>
 <span class="w">  </span><span class="kt">string</span><span class="w">                    </span><span class="na">event_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">         </span><span class="c1">// Unique event ID (unique per CSP)</span>
@@ -1076,6 +1164,25 @@
 <span class="w">  </span><span class="n">Location</span><span class="w">             </span><span class="na">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">                </span><span class="c1">// Event location (EPSG:4326)</span>
 <span class="w">  </span><span class="n">StaticEventMetadata</span><span class="w">  </span><span class="na">static_event_metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w">   </span><span class="c1">// For static events</span>
 <span class="w">  </span><span class="n">DynamicEventMetadata</span><span class="w"> </span><span class="na">dynamic_event_metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w">  </span><span class="c1">// For dynamic events</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="location">Location</h3>
+<div class="highlight"><pre><span></span><code><span class="kd">message</span><span class="w"> </span><span class="nc">Location</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">repeated</span><span class="w"> </span><span class="n">Point</span><span class="w">  </span><span class="na">coordinates</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">       </span><span class="c1">// EPSG:4326 coordinates</span>
+<span class="w">  </span><span class="n">CoordinatesType</span><span class="w"> </span><span class="na">coordinates_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">  </span><span class="c1">// POINT, LINE_STRING or POLYGON</span>
+<span class="w">  </span><span class="n">MeasurementType</span><span class="w"> </span><span class="na">heading</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w">           </span><span class="c1">// Driving direction the event applies to (unused if all directions)</span>
+<span class="p">}</span>
+
+<span class="kd">message</span><span class="w"> </span><span class="nc">Point</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="na">latitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="na">longitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="dynamic-event-metadata">Dynamic event metadata</h2>
+<p>Used for moving events such as <code>EMERGENCY_VEHICLE_APPROACHING</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">message</span><span class="w"> </span><span class="nc">DynamicEventMetadata</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">MeasurementType</span><span class="w"> </span><span class="na">event_speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">    </span><span class="c1">// Speed of the moving object</span>
+<span class="w">  </span><span class="n">MeasurementType</span><span class="w"> </span><span class="na">event_heading</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">  </span><span class="c1">// Heading in degrees</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="static-event-metadata">Static event metadata</h2>
@@ -1106,7 +1213,7 @@
 <div class="highlight"><pre><span></span><code><span class="kd">message</span><span class="w"> </span><span class="nc">RoadConfiguration</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">RoadConfigStatus</span><span class="w">   </span><span class="na">road_config_status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">    </span><span class="c1">// Lane status</span>
 <span class="w">  </span><span class="n">MeasurementType</span><span class="w">    </span><span class="na">max_speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">             </span><span class="c1">// Speed if CHANGED_MAX_SPEED</span>
-<span class="w">  </span><span class="n">RoadConfigLocation</span><span class="w"> </span><span class="na">road_config_location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w">  </span><span class="c1">// UPSTREAM or DOWNSTREAM</span>
+<span class="w">  </span><span class="n">RoadConfigLocation</span><span class="w"> </span><span class="na">road_config_location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w">  </span><span class="c1">// LOCATION_UPSTREAM or LOCATION_DOWNSTREAM</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w">               </span><span class="na">flashing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w">              </span><span class="c1">// Flashing lights present</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w">               </span><span class="na">red_border</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w">            </span><span class="c1">// Red border present</span>
 <span class="p">}</span>
@@ -1170,6 +1277,15 @@
 <span class="w">  </span><span class="kt">int32</span><span class="w">    </span><span class="na">lane_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w">    </span><span class="c1">// Lane for which priority is requested</span>
 <span class="p">}</span>
 </code></pre></div>
+<h3 id="traffic-light-state-information">Traffic light state information</h3>
+<div class="highlight"><pre><span></span><code><span class="kd">message</span><span class="w"> </span><span class="nc">TrafficLightStateInformation</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">CurrentState</span><span class="w"> </span><span class="na">current_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">  </span><span class="c1">// State of the light (see table below)</span>
+<span class="w">  </span><span class="n">Arrow</span><span class="w">        </span><span class="na">arrow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">          </span><span class="c1">// ARROW_NONE, ARROW_LEFT, ARROW_RIGHT, ARROW_STRAIGHT</span>
+<span class="w">  </span><span class="n">Movement</span><span class="w">     </span><span class="na">movement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w">       </span><span class="c1">// PROTECTED (show arrow) or PERMISSIVE (round dot)</span>
+<span class="w">  </span><span class="n">LightType</span><span class="w">    </span><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w">           </span><span class="c1">// No light, normal, public transport, bicycle or pedestrian light</span>
+<span class="w">  </span><span class="kt">string</span><span class="w">       </span><span class="na">light_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w">     </span><span class="c1">// Name of the light</span>
+<span class="p">}</span>
+</code></pre></div>
 <h3 id="traffic-light-states">Traffic light states</h3>
 <table>
 <thead>
@@ -1221,7 +1337,7 @@
 </code></pre></div>
 <h3 id="maneuver">Maneuver</h3>
 <div class="highlight"><pre><span></span><code><span class="kd">message</span><span class="w"> </span><span class="nc">Maneuver</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">repeated</span><span class="w"> </span><span class="n">Direction</span><span class="w"> </span><span class="na">direction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">  </span><span class="c1">// Possible directions: STRAIGHT, LEFT, RIGHT, U_TURN</span>
+<span class="w">  </span><span class="k">repeated</span><span class="w"> </span><span class="n">Direction</span><span class="w"> </span><span class="na">direction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">  </span><span class="c1">// Possible directions: STRAIGHT, LEFT, RIGHT, U_TURN, UNSPECIFIED</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="na">always_yield</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">            </span><span class="c1">// Whether to always give priority to intersecting traffic</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -1232,6 +1348,13 @@
 <span class="w">  </span><span class="kt">string</span><span class="w">        </span><span class="na">related_field</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w">       </span><span class="c1">// Field that caused the error</span>
 <span class="w">  </span><span class="n">FmsItsMessage</span><span class="w"> </span><span class="na">related_message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w">     </span><span class="c1">// Original message</span>
 <span class="w">  </span><span class="kt">bytes</span><span class="w">         </span><span class="na">related_raw_message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="c1">// Raw bytes if parsing failed</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="measurement-type">Measurement type</h2>
+<p>Speed, heading, and other measured values are sent as a value with a unit:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">message</span><span class="w"> </span><span class="nc">MeasurementType</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int32</span><span class="w">           </span><span class="na">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="n">MeasurementUnit</span><span class="w"> </span><span class="na">unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="measurement-units">Measurement units</h2>
@@ -1307,7 +1430,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "1.0.0"}</script>
     
     
-      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>

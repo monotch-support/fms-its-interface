@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
     
     
       
@@ -811,13 +811,13 @@
 <h1 id="use-cases">Use cases</h1>
 <p>This page describes the currently supported use cases in detail.</p>
 <h2 id="priority-at-traffic-lights">Priority at traffic lights</h2>
-<p>To request priority at a smart traffic light (iVRI), it is <strong>mandatory</strong> that the route of the vehicle is known. We send priority requests in advance to traffic lights along the route.</p>
-<p>We may choose to buffer priority responses of downstream traffic lights. In this case, only the latest status of the priority request for the traffic light the vehicle is currently approaching will be sent.</p>
+<p>To request priority at a smart traffic light (iVRI), it is <strong>mandatory</strong> that the route of the vehicle is known. The CSP sends priority requests in advance to traffic lights along the route.</p>
+<p>The CSP may hold back priority responses for traffic lights further along the route. In this case, only the latest status of the priority request for the traffic light the vehicle is currently approaching will be sent.</p>
 <h3 id="priority-status-flow">Priority status flow</h3>
 <p>The normal flow of priority status values:</p>
 <ol>
 <li><code>requested</code> - Priority request was detected by the traffic controller</li>
-<li><code>processing</code> - Request is in queue, other requests are prior</li>
+<li><code>processing</code> - Request is in queue, other requests have precedence</li>
 <li><code>granted</code> - Prioritization is active</li>
 <li><code>cancelled</code> - Priority information should no longer be displayed</li>
 </ol>
@@ -840,7 +840,7 @@
 </tr>
 <tr>
 <td><code>processing</code></td>
-<td>Checking request (other requests are prior)</td>
+<td>Checking request (other requests have precedence)</td>
 </tr>
 <tr>
 <td><code>watchOtherTraffic</code></td>
@@ -896,7 +896,7 @@
 </tr>
 <tr>
 <td><code>noPbcMatch</code></td>
-<td>No configuration for route and vehicle</td>
+<td>No configuration for route and vehicle in the Priority Broker Configurator (PBC)</td>
 </tr>
 </tbody>
 </table>
@@ -905,7 +905,7 @@
 <p>Failed priority requests do not result in error messages. The reason is communicated through the status field.</p>
 </div>
 <h2 id="traffic-light-status-and-timing">Traffic light status and timing</h2>
-<p>We send traffic light status and timing information for traffic lights along the vehicle's route.</p>
+<p>The CSP sends traffic light status and timing information for traffic lights along the vehicle's route.</p>
 <h3 id="traffic-light-status">Traffic light status</h3>
 <p>Each message indicates the current state of a traffic light for a specific lane:</p>
 <table>
@@ -945,9 +945,9 @@
 <h3 id="traffic-light-timing">Traffic light timing</h3>
 <p>Timing information indicates when the traffic light state is expected to change:</p>
 <ul>
-<li><strong><code>min_end_time</code></strong> - Earliest possible phase change</li>
-<li><strong><code>max_end_time</code></strong> - Latest possible phase change</li>
-<li><strong><code>likely_time</code></strong> - Most likely phase change time (between min and max, relevant for traffic-actuated control)</li>
+<li><strong><code>minEndTime</code></strong> - Earliest possible phase change</li>
+<li><strong><code>maxEndTime</code></strong> - Latest possible phase change</li>
+<li><strong><code>likelyTime</code></strong> - Most likely phase change time (between min and max, relevant for traffic-actuated control)</li>
 </ul>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
@@ -1004,11 +1004,12 @@
 </tbody>
 </table>
 <h2 id="emergency-vehicle-approaching">Emergency vehicle approaching</h2>
-<p>When an emergency vehicle is approaching, we send an <code>EMERGENCY_VEHICLE_APPROACHING</code> event. The event includes dynamic metadata with the speed and heading of the emergency vehicle, allowing the FMS to alert the driver in time.</p>
+<p>When an emergency vehicle is approaching, the CSP sends an <code>EMERGENCY_VEHICLE_APPROACHING</code> event. The event includes dynamic metadata with the speed and heading of the emergency vehicle, allowing the FMS to alert the driver in time.</p>
 <h2 id="dynamic-sampling">Dynamic sampling</h2>
-<p>When <code>dynamicRate</code> is enabled on the vehicle, we dynamically adjust the location update frequency by sending <code>CHANGED_FREQUENCY_REQUEST</code> events:</p>
+<p>When <code>dynamicRate</code> is enabled on the vehicle, the CSP dynamically adjusts the location update frequency by sending <code>CHANGED_FREQUENCY_REQUEST</code> events. The requested interval replaces the <a href="../websocket/#location-updates">default rate</a>:</p>
 <ul>
-<li>Intervals range between <strong>1 and 60 seconds</strong></li>
+<li>The requested interval is in the <code>desiredInterval</code> field of the info container, and ranges between <strong>1 and 60 seconds</strong></li>
+<li>The event <code>location</code> contains a polygon marking the zone where the requested interval applies</li>
 <li>The FMS party is allowed to send updates more frequently, but updates within 100ms of the last processed update will be discarded</li>
 <li>It is advisable to send an additional location update when the vehicle speed changes significantly (more than 15 km/h since the last update)</li>
 </ul>
@@ -1067,7 +1068,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "1.0.0"}</script>
     
     
-      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>
