@@ -1,0 +1,6 @@
+mkdocs
+mkdocs-include-markdown-plugin
+mkdocs-macros-plugin
+mkdocs-material
+plantuml-markdown
+pymdown-extensions
